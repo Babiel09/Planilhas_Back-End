@@ -5,10 +5,13 @@ const prismaClient = new PrismaClient();
 
 interface PostDelete {
     id: string
+};
+
+interface Post{
     nome: string;
     bairro: string;
     local: string;
-};
+}
 
 interface Put{
     id: string;
@@ -33,7 +36,7 @@ export class ShowAllPlanilhas {
 };
 
 export class InsertNewPlan{
-    async execute({nome, bairro, local}:PostDelete){
+    async execute({nome, bairro, local}:Post){
 
         try {
             const newPlan = await prismaClient.plan.create({
