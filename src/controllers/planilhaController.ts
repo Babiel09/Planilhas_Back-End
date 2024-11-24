@@ -1,5 +1,18 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { UpdateOnePlan, ShowOnePlan, InsertNewPlan, ShowAllPlanilhas, DeletePlan, BuscadorNome, BuscadorBairro, BuscadorLocal } from "../services/planilhasService";
+import { 
+    UpdateOnePlan, 
+    ShowOnePlan, 
+    InsertNewPlan, 
+    ShowAllPlanilhas, 
+    DeletePlan, 
+    BuscadorNome, 
+    BuscadorBairro, 
+    BuscadorLocal, 
+    UpdateContao, 
+    UpdateLocal, 
+    UpdateNome, 
+    UpdateTipo 
+} from "../services/planilhasService";
 import { ClanEnum } from "@prisma/client";
 
 export abstract class planilhaController {
@@ -50,8 +63,88 @@ export abstract class planilhaController {
     };
 
     static async patchNome(req: FastifyRequest, reply: FastifyReply){
-        
+        const nomezao = new UpdateNome();
+        try{
+            const {id} = req.params as {id:string};
+            const {nome} = req.body as {nome:string};
+
+
+            if(!id){
+                throw new Error("o id não foi encontrado, por favor verifique os parâmetros da requisição");
+            };
+
+            if(!nome){
+                throw new Error("Você precisa passar o nome")
+            }
+
+            const updatedNome = await nomezao.execute({id, nome});
+            reply.status(202).send(updatedNome);
+        }catch (err) {
+            reply.status(400).send({ server: `Unxpected error in the PATCH Method, check the error in console and here: ${err}` });
+            console.log(err);
+        };
     };
+
+    static async patchLocal(req: FastifyRequest, reply: FastifyReply) {
+        const localzao = new UpdateLocal();
+        try{
+
+            const {id} = req.params as {id:string};
+            const {local} = req.body as {local:string};
+
+            const updatedLocal = await localzao.execute({id, local});
+            reply.status(202).send(updatedLocal);
+
+        }catch (err) {
+            reply.status(400).send({ server: `Unxpected error in the PATCH Method, check the error in console and here: ${err}` });
+            console.log(err);
+        };
+    };
+
+    static async patchContato(req: FastifyRequest, reply: FastifyReply) {
+        const contazao = new UpdateContao();
+        try{
+            const {id} = req.params as {id:string};
+            const {contato} = req.body as {contato:string};
+
+            if(!id){
+                throw new Error(`O id fornecido: ${id}, é invalido, por favor verifique os parâmetros da requisição.`);
+            };
+
+            if(!contato){
+                throw new Error(`Você precisa fornecer o contato para progedir`);
+            };
+
+            const updatedContato = await contazao.execute({id,contato});
+            reply.status(202).send(updatedContato);
+
+        } catch (err) {
+            reply.status(400).send({ server: `Unxpected error in the PATCH Method, check the error in console and here: ${err}` });
+            console.log(err);
+        };
+    }
+    static async patchTipo(req: FastifyRequest, reply: FastifyReply) {
+        const tipozao = new UpdateTipo();
+        try{
+            const {id} = req.params as {id:string};
+            const {tipo} = req.body as {tipo:ClanEnum};
+
+            if(!id){
+                throw new Error(`O id fornecido: ${id}, é invalido, por favor verifique os parâmetros da requisição.`);
+            };
+
+            if(!tipo){
+                throw new Error(`Você precisa fornecer o tipo para progedir`);
+            };
+
+            const updatedContato = await tipozao.execute({id,tipo});
+            reply.status(202).send(updatedContato);
+
+        } catch (err) {
+            reply.status(400).send({ server: `Unxpected error in the PATCH Method, check the error in console and here: ${err}` });
+            console.log(err);
+        };
+    }
 
 
     static async deltePlansFromDB(req: FastifyRequest, reply: FastifyReply) {

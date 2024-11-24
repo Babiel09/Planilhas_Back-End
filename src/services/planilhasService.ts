@@ -217,6 +217,8 @@ export class UpdateNome{
                 }
             });
 
+            return planUpdated;
+
         } catch(err){
             throw new Error(`Ocorreu um problema para editar o nome no DB: ${err}`);
         };
@@ -246,6 +248,71 @@ export class UpdateLocal{
                     local:local
                 }
             });
+
+            return updateLocal;
+        } catch(err) {
+            throw new Error(`Ocorreu um problema para editar o local no DB: ${err}`);
+        };
+    };
+};
+
+export class UpdateContao{
+    async execute({id,contato}:ContatoProps){
+        try{
+
+            const findedId = await prismaClient.plan.findFirst({
+                where:{
+                    id:id
+                }
+            });
+
+            if(!findedId){
+                throw new Error("Não achamos o id");
+            };
+
+            const updateContao = await prismaClient.plan.update({
+                where:{
+                    id:findedId.id
+                },
+                data:{
+                    contato:contato
+                }
+            });
+
+            return updateContao;
+
+
+        } catch(err) {
+            throw new Error(`Ocorreu um problema para editar o local no DB: ${err}`);
+        };
+    };
+};
+export class UpdateTipo{
+    async execute({id,tipo}:TipoProps){
+        try{
+
+            const findedId = await prismaClient.plan.findFirst({
+                where:{
+                    id:id
+                }
+            });
+
+            if(!findedId){
+                throw new Error("Não achamos o id");
+            };
+
+            const updateContao = await prismaClient.plan.update({
+                where:{
+                    id:findedId.id
+                },
+                data:{
+                    tipo:tipo
+                }
+            });
+
+            return updateContao;
+
+
         } catch(err) {
             throw new Error(`Ocorreu um problema para editar o local no DB: ${err}`);
         };
