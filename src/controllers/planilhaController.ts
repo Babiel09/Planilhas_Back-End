@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { UpdateOnePlan, ShowOnePlan, InsertNewPlan, ShowAllPlanilhas, DeletePlan } from "../services/planilhasService";
+import { UpdateOnePlan, ShowOnePlan, InsertNewPlan, ShowAllPlanilhas, DeletePlan, BuscadorNome, BuscadorBairro, BuscadorLocal } from "../services/planilhasService";
 
-export class planilhaController {
+export abstract class planilhaController {
     static async getAll(req: FastifyRequest, reply: FastifyReply) {
 
         const show = new ShowAllPlanilhas();
@@ -61,15 +61,15 @@ export class planilhaController {
 
     };
 
-    static async getOnePlan(req: FastifyRequest, reply: FastifyReply){
-        
+    static async getOnePlan(req: FastifyRequest, reply: FastifyReply) {
+
         const getSpecifiedPlan = new ShowOnePlan();
 
-        try{
-            const id = req.params as {id:string};
+        try {
+            const id = req.params as { id: string };
             const specified = await getSpecifiedPlan.execute(id);
             reply.status(200).send(specified);
-        }catch (err) {
+        } catch (err) {
             reply.status(400).send({ server: `Unxpected error in the GET:ID Method, check the error in console and here: ${err}` });
             console.log(err);
         };
@@ -78,35 +78,71 @@ export class planilhaController {
     static async putPlan(req: FastifyRequest, reply: FastifyReply) {
         const updated = new UpdateOnePlan();
 
-        try{
-            const identifier = req.params as {id:string};
-            const planData = req.body as {planData: {[key:string]:any}};
+        try {
+            const identifier = req.params as { id: string };
+            const planData = req.body as { planData: { [key: string]: any } };
 
             const putedPlan = await updated.execute({
-                id:identifier.id,
-                data:planData
+                id: identifier.id,
+                data: planData
             });
 
             reply.status(202).send(putedPlan);
 
-        }catch (err) {
+        } catch (err) {
             reply.status(400).send({ server: `Unxpected error in the GET:ID Method, check the error in console and here: ${err}` });
             console.log(err);
         };
     };
 
- static async buscarPlanilha(req: FastifyRequest, reply: FastifyReply) {
- 
- try{
-      const {nome,local} = req.query as {nome:string, local:string};
+    static async buscarPlanilhaNome(req: FastifyRequest, reply: FastifyReply) {
+        const procuraNome = new BuscadorNome();
+        try {
+            const { nome } = req.query as { nome: string };
 
-   const doTheBusca = //Adicionar o service para pesquisa aqui
+            if(!nome) {
+                reply.status(400).send({server:"Você esqueceu de adicionar o nome nos parâmetros de busca!"});    
+            };
 
+            const doTheBusca = await procuraNome.execute({nome});
+            reply.status(200).send(doTheBusca);
 
-}catch (err) {
-            reply.status(400).send({ server: `Unxpected error in the BUACA Function, check the error in console and here: ${err}` });
+        } catch (err) {
+            reply.status(500).send({ server: `Unxpected error in the BUSCA Function, check the error in console and here: ${err}` });
             console.log(err);
         };
 
-};
+    };
+
+    static async buscarPlanilhaLocal(req: FastifyRequest, reply: FastifyReply) {
+        const procuraLocal = new BuscadorLocal();
+        
+        try{
+            const {local} = req.query as {local:string};
+            if(!local) {
+                reply.status(400).send({server:"Você esqueceu de fornecer o local!"})
+            };
+            const doTheBusca2 = await procuraLocal.execute({local});
+            reply.status(200).send(doTheBusca2);
+        } catch(err){
+            reply.status(500).send({ server: `Unxpected error in the BUSCA Function, check the error in console and here: ${err}` });
+            console.log(err);
+        };
+    };
+
+    static async buscaPlanilhaBairro(req: FastifyRequest, reply: FastifyReply) {
+        const procuraBairro = new BuscadorBairro();
+
+        try{
+            const {bairro} = req.query as {bairro:string};
+            if(!bairro){
+                reply.status(400).send({server:"Você esqueceu de fornecer o bairro!"});    
+            };
+            const doTheBusca3 = await procuraBairro.execute({bairro});
+            reply.status(200).send(doTheBusca3);
+        } catch(err){
+            reply.status(500).send({ server: `Unxpected error in the BUSCA Function, check the error in console and here: ${err}` });
+            console.log(err);
+        };
+    };
 };

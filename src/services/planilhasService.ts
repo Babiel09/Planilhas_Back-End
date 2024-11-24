@@ -24,6 +24,67 @@ interface GetPerid{
     id: string;
 };
 
+interface BuscaNomeProps{
+    nome:string;
+
+};
+interface BuscaBairroProps{
+    bairro:string;
+    
+
+};
+interface BuscaLocalProps{
+    local:string;
+    
+
+};
+
+
+export class BuscadorNome{
+    async execute({nome}:BuscaNomeProps) {
+        try{
+            const buscaNome = prismaClient.plan.findFirst({
+                where:{
+                    nome:nome
+                }
+            });
+            return buscaNome;
+        }catch (err) {
+            throw new Error(`Ocorreu um problema para buscar certos elementos no DB: ${err}`);
+        };
+    };
+};
+
+
+export class BuscadorBairro{
+    async execute({bairro}:BuscaBairroProps) {
+        try{
+            const buscaBairro = prismaClient.plan.findFirst({
+                where:{
+                    bairro:bairro
+                }
+            });
+            return buscaBairro;
+        }catch (err) {
+            throw new Error(`Ocorreu um problema para buscar certos elementos no DB: ${err}`);
+        };
+    };
+};
+
+export class BuscadorLocal{
+    async execute({local}:BuscaLocalProps) {
+        try{
+            const buscaLocal = prismaClient.plan.findFirst({
+                where:{
+                    local:local
+                }
+            });
+            return buscaLocal;
+        }catch (err) {
+            throw new Error(`Ocorreu um problema para buscar certos elementos no DB: ${err}`);
+        };
+    };
+};
 export class ShowAllPlanilhas {
     async execute() {
         try {
