@@ -18,4 +18,12 @@ model plan {
   nome String
   bairro String
   local String
+  contato String
+  numero Int
+  tipo ClanEnum
+}
+
+enum ClanEnum {
+  Casa
+  Apartamento 
 }

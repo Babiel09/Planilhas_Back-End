@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { ClanEnum, PrismaClient } from "@prisma/client";
 
 
 const prismaClient = new PrismaClient();
@@ -7,10 +7,42 @@ interface PostDelete {
     id: string
 };
 
+interface NomeProps{
+    id: string
+    nome:string
+}
+interface BairroProps{
+    id: string
+    bairro: string
+
+}
+interface LocalProps{
+    id: string
+    local: string
+}
+interface ContatoProps{
+    id: string
+    contato: string
+}
+interface NumeroProps{
+    id: string
+    numero: Number
+}
+interface TipoProps{
+    id: string
+    tipo: ClanEnum
+}
+
+
+
+
 interface Post{
-    nome: string;
-    bairro: string;
-    local: string;
+    nome: string
+    bairro: string
+    local: string
+    contato: string
+    numero: Number
+    tipo: ClanEnum
 }
 
 interface Put{
@@ -88,23 +120,26 @@ export class BuscadorLocal{
 export class ShowAllPlanilhas {
     async execute() {
         try {
-            const allPlan = await prismaClient.plan.findMany();
+            const allPlan = await prismaClient.plan.findMany(); //O erro tá aqui, mas eu não sei o motivo
             return allPlan;
         } catch (err) {
             throw new Error(`Ocorreu um problema para pegar todas as planilhas no DB: ${err}`);
         };
-    };
-};
+    }; 
+}; //Quando eu faço o post funciona se liga
 
 export class InsertNewPlan{
-    async execute({nome, bairro, local}:Post){
+    async execute({nome, bairro, local, contato, numero, tipo}:Post){
 
         try {
             const newPlan = await prismaClient.plan.create({
                 data:{
                     nome:nome,
                     bairro: bairro,
-                    local: local
+                    local: local,
+                    contato: contato,
+                    numero: numero,
+                    tipo: tipo
                 }
             });
             return {newPlan};
@@ -128,6 +163,7 @@ export class ShowOnePlan{
         };
     };
 };
+
 
 export class UpdateOnePlan{
     async execute({id, data}:Put) {
@@ -153,6 +189,65 @@ export class UpdateOnePlan{
 
         }catch (err) {
             throw new Error(`Ocorreu um problema para pegar uma planilha especifíca no DB: ${err}`);
+        };
+    };
+};
+
+
+export class UpdateNome{
+    async execute({id,nome}:NomeProps){
+        try{
+            const findedId = await prismaClient.plan.findFirst({
+                where:{
+                    id: id
+                }
+            });
+
+            if(!findedId){
+                throw new Error("Não achamos o id");
+            };
+
+            const planUpdated = await prismaClient.plan.update({
+                where:{
+                    id:findedId?.id
+                    
+                },
+                data:{
+                    nome:nome
+                }
+            });
+
+        } catch(err){
+            throw new Error(`Ocorreu um problema para editar o nome no DB: ${err}`);
+        };
+    };
+};
+
+export class UpdateLocal{
+    async execute({id,local}:LocalProps) {
+        try{
+            const findedId = await prismaClient.plan.findFirst({
+                where:{
+                    id:id
+                }
+            });
+        
+            if(!findedId) {
+                throw new Error("Não achamos o id");
+            };
+
+
+
+            const updateLocal = await prismaClient.plan.update({
+                where:{
+                    id:findedId.id
+                },
+                data:{
+                    local:local
+                }
+            });
+        } catch(err) {
+            throw new Error(`Ocorreu um problema para editar o local no DB: ${err}`);
         };
     };
 };

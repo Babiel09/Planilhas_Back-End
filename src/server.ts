@@ -1,8 +1,9 @@
 import fastify  from "fastify";
 import cors from '@fastify/cors';
 import { router } from "./routes/router";
-const app = fastify({logger:true});
 
+
+const app = fastify({logger:true});
 
 const server = async  () => {
     await app.register(cors);

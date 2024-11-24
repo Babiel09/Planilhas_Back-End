@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UpdateOnePlan, ShowOnePlan, InsertNewPlan, ShowAllPlanilhas, DeletePlan, BuscadorNome, BuscadorBairro, BuscadorLocal } from "../services/planilhasService";
+import { ClanEnum } from "@prisma/client";
 
 export abstract class planilhaController {
     static async getAll(req: FastifyRequest, reply: FastifyReply) {
@@ -7,7 +8,8 @@ export abstract class planilhaController {
         const show = new ShowAllPlanilhas();
 
         try {
-            const allPlans = await show.execute();
+            const allPlans = await show.execute(); //qui eu tô usando o service do Prisma
+           
 
             if (!allPlans) {
                 reply.status(500).send("server: we can't find any 'planilhas'");
@@ -26,19 +28,31 @@ export abstract class planilhaController {
         const insert = new InsertNewPlan();
 
         try {
-            const { nome, bairro, local } = req.body as {
+            const { nome, bairro, local, numero, tipo, contato } = req.body as {
                 nome: string,
                 bairro: string,
-                local: string
+                local: string,
+                contato:string,
+                numero: Number,
+                tipo:ClanEnum
             };
 
-            const newPlan = await insert.execute({ nome, bairro, local });
+            if(!nome || !bairro || !local ||!numero || !tipo || !contato){
+                throw new Error("Você esqueceu de adicionar um elemento no método POST");
+            };
+
+            const newPlan = await insert.execute({ nome, bairro, local, numero, tipo, contato });
             reply.status(201).send(newPlan);
         } catch (err) {
             reply.status(400).send({ server: `Unxpected error in the POST Method, check the error in console and here: ${err}` });
             console.log(err);
         };
     };
+
+    static async patchNome(req: FastifyRequest, reply: FastifyReply){
+        
+    };
+
 
     static async deltePlansFromDB(req: FastifyRequest, reply: FastifyReply) {
 
@@ -99,7 +113,7 @@ export abstract class planilhaController {
         const procuraNome = new BuscadorNome();
         try {
             const { nome } = req.query as { nome: string };
-
+    
             if(!nome) {
                 reply.status(400).send({server:"Você esqueceu de adicionar o nome nos parâmetros de busca!"});    
             };
