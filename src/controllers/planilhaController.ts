@@ -94,4 +94,19 @@ export class planilhaController {
             console.log(err);
         };
     };
-}
+
+ static async buscarPlanilha(req: FastifyRequest, reply: FastifyReply) {
+ 
+ try{
+      const {nome,local} = req.query as {nome:string, local:string};
+
+   const doTheBusca = //Adicionar o service para pesquisa aqui
+
+
+}catch (err) {
+            reply.status(400).send({ server: `Unxpected error in the BUACA Function, check the error in console and here: ${err}` });
+            console.log(err);
+        };
+
+};
+};
